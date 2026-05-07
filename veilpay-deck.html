@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VeilPay — Pitch Deck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #000;
+    color: #F9FAFB;
+    overflow: hidden;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+    background: rgba(17,24,39,0.85);
+    border: 1px solid #1f2d45;
+    border-radius: 999px;
+    padding: 8px 20px;
+    backdrop-filter: blur(8px);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav button:hover { color: #fff; background: #1f2d45; }
+  .nav button:disabled { opacity: 0.2; cursor: default; }
+  .nav-counter { font-size: 13px; color: #6B7280; min-width: 48px; text-align: center; }
+
+  /* Slides */
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    padding: 0;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; flex-direction: column; }
+
+  /* Common layout */
+  .slide-inner {
+    flex: 1;
+    padding: 56px 72px 80px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Background glow */
+  .glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .glow::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%);
+    top: -100px; left: -100px;
+  }
+  .glow::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+    bottom: -80px; right: -80px;
+  }
+
+  /* Slide header */
+  .slide-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 32px;
+  }
+  .slide-title span {
+    color: #3B82F6;
+    margin-right: 10px;
+  }
+
+  /* Footer */
+  .slide-footer {
+    position: absolute;
+    bottom: 28px;
+    left: 72px;
+    right: 72px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 3;
+  }
+  .footer-brand { font-size: 11px; color: #374151; }
+  .footer-num { font-size: 11px; color: #374151; }
+
+  /* Gradient text */
+  .grad {
+    background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Pills / badges */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+  .pill-blue { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #60A5FA; }
+  .pill-green { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #22C55E; }
+  .pill-amber { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #F59E0B; }
+  .pill-purple { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); color: #A78BFA; }
+
+  /* Cards */
+  .card {
+    background: #111827;
+    border: 1px solid #1f2d45;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card-green { border-color: rgba(34,197,94,0.4); }
+  .card-amber { border-color: rgba(245,158,11,0.35); }
+  .card-blue { border-color: rgba(59,130,246,0.4); }
+  .card-purple { border-color: rgba(139,92,246,0.4); }
+
+  /* Two column */
+  .cols { display: grid; gap: 48px; flex: 1; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* Step list */
+  .steps { display: flex; flex-direction: column; gap: 14px; }
+  .step { display: flex; align-items: flex-start; gap: 14px; }
+  .step-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .step-text { font-size: 14px; color: #D1D5DB; line-height: 1.5; }
+  .step-text strong { color: #F9FAFB; }
+
+  /* Table */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tbl th { padding: 10px 14px; text-align: left; color: #6B7280; font-weight: 500; border-bottom: 1px solid #1f2d45; }
+  .tbl td { padding: 10px 14px; border-bottom: 1px solid #0d1117; color: #D1D5DB; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* Code block */
+  .code {
+    background: #0d1117;
+    border: 1px solid #1f2d45;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #9CA3AF;
+  }
+  .code .kw { color: #60A5FA; }
+  .code .val { color: #22C55E; }
+  .code .cm { color: #4B5563; }
+
+  /* Reveal dot */
+  .dot-green { color: #22C55E; }
+  .dot-amber { color: #F59E0B; }
+
+  /* ─── SLIDE 1 ─────────────────────────────── */
+  #s1 { background: #080A12; }
+  #s1 .center { text-align: center; margin: auto; max-width: 800px; }
+  #s1 .logo { display: flex; align-items: center; gap: 10px; position: absolute; top: 48px; left: 72px; z-index: 3; }
+  #s1 .logo-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  #s1 .logo-text { font-size: 20px; font-weight: 700; color: #fff; }
+  #s1 .logo-text span { color: #3B82F6; }
+  #s1 .eyebrow { font-size: 13px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; }
+  #s1 .h1 { font-size: 64px; font-weight: 900; line-height: 1.05; margin-bottom: 12px; }
+  #s1 .h2 { font-size: 48px; font-weight: 800; color: #F9FAFB; margin-bottom: 24px; }
+  #s1 .sub { font-size: 16px; color: #6B7280; max-width: 580px; margin: 0 auto 40px; line-height: 1.6; }
+  #s1 .pills { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* ─── SLIDE 2 ─────────────────────────────── */
+  #s2 { background: #080A12; }
+  #s2 .grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  #s2 .prob-card { border-color: rgba(239,68,68,0.3); }
+  #s2 .prob-card .label { font-size: 13px; font-weight: 700; color: #F9FAFB; margin-bottom: 6px; }
+  #s2 .prob-card .desc { font-size: 12px; color: #6B7280; line-height: 1.5; }
+  #s2 .scenarios { display: flex; flex-direction: column; gap: 8px; }
+  #s2 .scenario { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #9CA3AF; }
+  #s2 .tagline { font-size: 12px; color: #4B5563; text-align: center; margin-top: 16px; font-style: italic; }
+  #s2 .tagline em { color: #6B7280; font-style: normal; }
+
+  /* ─── SLIDE 3 ─────────────────────────────── */
+  #s3 { background: #080A12; }
+  #s3 .insight-head { text-align: center; margin-bottom: 36px; }
+  #s3 .big { font-size: 42px; font-weight: 800; margin-bottom: 8px; }
+  #s3 .sub3 { font-size: 15px; color: #6B7280; max-width: 600px; margin: 0 auto 36px; line-height: 1.6; }
+  #s3 .viz-table { width: 100%; border-collapse: collapse; }
+  #s3 .viz-table td { padding: 12px 20px; border: 1px solid #1f2d45; text-align: center; font-size: 13px; }
+  #s3 .viz-table .col-hd { background: #0d1117; color: #6B7280; font-weight: 600; font-size: 12px; }
+  #s3 .viz-table .row-hd { background: #0d1117; color: #6B7280; font-weight: 600; font-size: 12px; text-align: left; }
+  #s3 .hidden-badge { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #F59E0B; padding: 2px 10px; border-radius: 4px; font-size: 12px; }
+  #s3 .revealed { color: #22C55E; font-weight: 600; }
+  #s3 .archived { color: #4B5563; }
+  #s3 .bottom-note { font-size: 12px; color: #4B5563; text-align: center; margin-top: 20px; line-height: 1.6; }
+
+  /* ─── SLIDE 4 ─────────────────────────────── */
+  #s4 { background: #080A12; }
+  #s4 .tagline4 { font-size: 20px; font-weight: 700; margin-bottom: 32px; }
+  #s4 .rule-code { margin-top: 12px; }
+  #s4 .check-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #9CA3AF; margin-bottom: 6px; }
+  #s4 .check-row span { color: #22C55E; }
+  #s4 .badges-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+  /* ─── SLIDE 5 ─────────────────────────────── */
+  #s5 { background: #080A12; }
+  #s5 .flow-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; margin-bottom: 16px; }
+  #s5 .flow-card {
+    background: #0d1117;
+    border: 1px solid #1f2d45;
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  #s5 .flow-n {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  #s5 .flow-body .action { font-size: 12px; font-weight: 600; color: #F9FAFB; }
+  #s5 .flow-body .result { font-size: 11px; color: #6B7280; margin-top: 2px; }
+  #s5 .callout {
+    background: rgba(34,197,94,0.07);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 12px;
+    color: #9CA3AF;
+    line-height: 1.6;
+  }
+  #s5 .callout strong { color: #22C55E; }
+
+  /* ─── SLIDE 6 ─────────────────────────────── */
+  #s6 { background: #080A12; }
+  #s6 .arch-layer {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    border: 1px solid #1f2d45;
+    background: #0d1117;
+  }
+  #s6 .layer-title { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+  #s6 .layer-sub { font-size: 11px; color: #6B7280; line-height: 1.5; }
+  #s6 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #s6 .note { font-size: 11px; color: #4B5563; margin-top: 10px; text-align: right; font-style: italic; }
+
+  /* ─── SLIDE 7 ─────────────────────────────── */
+  #s7 { background: #080A12; }
+  #s7 .impact-stmt { font-size: 22px; font-weight: 800; line-height: 1.4; margin-bottom: 16px; }
+  #s7 .impact-body { font-size: 14px; color: #6B7280; line-height: 1.7; }
+  #s7 .banner {
+    position: absolute; bottom: 60px; left: 0; right: 0;
+    background: linear-gradient(90deg,#2563eb,#7c3aed);
+    padding: 14px 72px;
+    font-size: 14px; font-weight: 600; color: #fff;
+    text-align: center; z-index: 3;
+  }
+
+  /* ─── SLIDE 8 ─────────────────────────────── */
+  #s8 { background: #080A12; }
+  #s8 .phase-card { border-radius: 12px; padding: 18px; height: 100%; }
+  #s8 .phase-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+  #s8 .phase-title { font-size: 16px; font-weight: 700; color: #F9FAFB; margin-bottom: 14px; }
+  #s8 .phase-item { font-size: 12px; color: #9CA3AF; margin-bottom: 7px; line-height: 1.4; }
+  #s8 .phase-item .done { color: #22C55E; margin-right: 6px; }
+  #s8 .phase-item .mock { color: #F59E0B; margin-right: 6px; }
+  #s8 .phase-item .todo { color: #4B5563; margin-right: 6px; }
+  #s8 .closing { text-align: center; margin-top: 24px; }
+  #s8 .closing p { font-size: 14px; color: #6B7280; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- ═══ SLIDE 1 — Title ═══ -->
+  <div class="slide active" id="s1">
+    <div class="glow"></div>
+    <div class="logo">
+      <div class="logo-icon">🛡</div>
+      <div class="logo-text">Veil<span>Pay</span></div>
+    </div>
+    <div class="slide-inner" style="justify-content:center;align-items:center;">
+      <div class="center">
+        <div class="eyebrow">Programmable Privacy on Solana</div>
+        <div class="h1 grad">Privacy is not binary.</div>
+        <div class="h2">It should be programmable.</div>
+        <div class="sub">Define who can see transaction data, when, and under what conditions — without giving up auditability.</div>
+        <div class="pills">
+          <span class="pill pill-blue">⚡ Built on Solana</span>
+          <span class="pill pill-amber">🏆 Hackathon Demo</span>
+          <span class="pill pill-green">● Live on Devnet</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2 — Problem ═══ -->
+  <div class="slide" id="s2">
+    <div class="glow"></div>
+    <div class="slide-inner">
+      <div class="slide-title"><span>02</span>The Problem</div>
+      <div class="cols cols-2" style="align-items:start;">
+        <div>
+          <div style="font-size:24px;font-weight:800;color:#F9FAFB;line-height:1.3;margin-bottom:16px;">On-chain payments are all-or-nothing today.</div>
+          <div style="font-size:14px;color:#6B7280;line-height:1.7;margin-bottom:24px;">Every Solana transaction is permanently public. Amounts, senders, and receivers are exposed to anyone — forever.</div>
+          <div class="scenarios">
+            <div class="scenario">🏢 <span>DAO pays contributors — <strong style="color:#F9FAFB">everyone sees everyone's salary</strong></span></div>
+            <div class="scenario">📄 <span>Company pays supplier — <strong style="color:#F9FAFB">competitor sees the deal amount</strong></span></div>
+            <div class="scenario">👤 <span>Individual receives large payment — <strong style="color:#F9FAFB">becomes a target</strong></span></div>
+          </div>
+        </div>
+        <div>
+          <div class="grid-2x2">
+            <div class="card prob-card" style="border-color:rgba(239,68,68,0.35);">
+              <div style="font-size:22px;margin-bottom:8px;">👁</div>
+              <div class="label">Fully Public</div>
+              <div class="desc">All transaction data permanently visible to anyone</div>
+              <div style="margin-top:10px;"><span class="pill pill-amber" style="font-size:10px;">No Privacy</span></div>
+            </div>
+            <div class="card prob-card" style="border-color:rgba(239,68,68,0.35);">
+              <div style="font-size:22px;margin-bottom:8px;">🚫</div>
+              <div class="label">Fully Hidden (Mixers)</div>
+              <div class="desc">Anonymity that breaks compliance and triggers regulators</div>
+              <div style="margin-top:10px;"><span class="pill pill-amber" style="font-size:10px;">No Compliance</span></div>
+            </div>
+          </div>
+          <div class="card" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.2);padding:14px 18px;text-align:center;">
+            <div style="font-size:13px;color:#9CA3AF;line-height:1.6;">The core tension: <em style="color:#F9FAFB;font-style:normal;">Transparency makes blockchains trustworthy.</em><br>Full transparency makes them <em style="color:#EF4444;font-style:normal;">unusable for real finance.</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer"><span class="footer-brand">VeilPay · Programmable Privacy for On-Chain Payments</span><span class="footer-num">2 / 8</span></div>
+  </div>
+
+  <!-- ═══ SLIDE 3 — Insight ═══ -->
+  <div class="slide" id="s3">
+    <div class="glow"></div>
+    <div class="slide-inner">
+      <div class="slide-title"><span>03</span>The Insight</div>
+      <div class="insight-head">
+        <div class="big grad">Privacy should be programmable.</div>
+        <div class="big" style="font-size:32px;color:#F9FAFB;">Not binary.</div>
+        <div class="sub3">The right question isn't "should this be hidden?" — it's "who should see this, when, and under what conditions?"</div>
+      </div>
+      <table class="viz-table">
+        <thead>
+          <tr>
+            <td class="col-hd"></td>
+            <td class="col-hd">Transaction A</td>
+            <td class="col-hd">Transaction B</td>
+            <td class="col-hd">Transaction C</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-hd">Public ledger</td>
+            <td style="text-align:center;color:#4B5563;">✓ EXISTS</td>
+            <td style="text-align:center;color:#4B5563;">✓ EXISTS</td>
+            <td style="text-align:center;color:#4B5563;">✓ EXISTS</td>
+          </tr>
+          <tr>
+            <td class="row-hd">Public sees</td>
+            <td style="text-align:center;"><span class="hidden-badge">[Hidden]</span></td>
+            <td style="text-align:center;"><span class="hidden-badge">[Hidden]</span></td>
+            <td style="text-align:center;"><span class="hidden-badge">[Hidden]</span></td>
+          </tr>
+          <tr>
+            <td class="row-hd">Auditor sees</td>
+            <td style="text-align:center;" class="revealed">$12,000</td>
+            <td style="text-align:center;" class="revealed">$5,000</td>
+            <td style="text-align:center;" class="revealed">$28,000</td>
+          </tr>
+          <tr>
+            <td class="row-hd">After 90 days</td>
+            <td style="text-align:center;" class="archived">$12,000</td>
+            <td style="text-align:center;" class="archived">$5,000</td>
+            <td style="text-align:center;" class="archived">$28,000</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="bottom-note">This model already exists in traditional finance — bank statements, auditor access, regulatory subpoenas, archival laws.<br><strong style="color:#6B7280;">VeilPay brings it to Solana.</strong></div>
+    </div>
+    <div class="slide-footer"><span class="footer-brand">VeilPay · Programmable Privacy for On-Chain Payments</span><span class="footer-num">3 / 8</span></div>
+  </div>
+
+  <!-- ═══ SLIDE 4 — Solution ═══ -->
+  <div class="slide" id="s4">
+    <div class="glow"></div>
+    <div class="slide-inner">
+      <div class="slide-title"><span>04</span>The Solution</div>
+      <div class="tagline4 grad">VeilPay — Programmable privacy rules at the transaction layer.</div>
+      <div class="cols cols-2">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#6B7280;margin-bottom:16px;">HOW IT WORKS</div>
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Sender defines a privacy rule</strong> per transaction</div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Rule Engine applies</strong> the policy</div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-text">Public sees <strong>[Hidden]</strong> for protected fields</div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Authorized roles reveal</strong> on demand with cryptographic proof</div></div>
+          </div>
+          <div class="badges-row">
+            <span class="pill pill-green" style="font-size:11px;">✅ Transactions verifiable</span>
+            <span class="pill pill-green" style="font-size:11px;">✅ Fields masked for public</span>
+            <span class="pill pill-green" style="font-size:11px;">✅ Auditors can reveal</span>
+            <span class="pill pill-green" style="font-size:11px;">✅ Full auditability</span>
+          </div>
+        </div>
+        <div>
+          <div class="card card-blue">
+            <div style="font-size:12px;font-weight:600;color:#6B7280;margin-bottom:12px;">EXAMPLE PRIVACY RULE</div>
+            <div class="code">
+              <div><span class="kw">hide_amount_if</span> &gt; <span class="val">1,000 USDC</span></div>
+              <div><span class="kw">hide_sender</span>       <span class="val">✓</span></div>
+              <div><span class="kw">hide_receiver</span>     <span class="val">✓</span></div>
+              <div><span class="cm">───────────────────────</span></div>
+              <div><span class="kw">allow_reveal</span>:  <span class="val">[Auditor]</span></div>
+              <div><span class="kw">reveal_delay</span>:  <span class="val">10 minutes</span></div>
+            </div>
+            <div style="margin-top:16px;padding:12px;background:#080A12;border-radius:8px;border:1px solid #0d1a2e;">
+              <div style="font-size:11px;color:#6B7280;margin-bottom:8px;">PUBLIC VIEW</div>
+              <div class="check-row"><span>████</span> Amount hidden (rule: &gt;1000)</div>
+              <div class="check-row"><span>████</span> Sender hidden</div>
+              <div class="check-row"><span>████</span> Receiver hidden</div>
+              <div class="check-row" style="color:#22C55E;">● Proof ID: vp_8f3a…c29d</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer"><span class="footer-brand">VeilPay · Programmable Privacy for On-Chain Payments</span><span class="footer-num">4 / 8</span></div>
+  </div>
+
+  <!-- ═══ SLIDE 5 — Demo ═══ -->
+  <div class="slide" id="s5">
+    <div class="glow"></div>
+    <div class="slide-inner">
+      <div class="slide-title"><span>05</span>Live Demo — Solana Devnet</div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <span class="pill pill-green">● Live on Devnet</span>
+        <span class="pill pill-blue">🔗 Ed25519 Verified On-Chain</span>
+        <span class="pill pill-blue">📋 Memo Program Anchored</span>
+      </div>
+      <div class="flow-grid">
+        <div class="flow-card"><div class="flow-n">1</div><div class="flow-body"><div class="action">Connect Wallet</div><div class="result">Phantom connects, real address appears</div></div></div>
+        <div class="flow-card"><div class="flow-n">2</div><div class="flow-body"><div class="action">⚡ Get Devnet SOL</div><div class="result">0.5 SOL airdropped for gas</div></div></div>
+        <div class="flow-card"><div class="flow-n">3</div><div class="flow-body"><div class="action">Fill Send Form</div><div class="result">Privacy rules apply in real time</div></div></div>
+        <div class="flow-card"><div class="flow-n">4</div><div class="flow-body"><div class="action">Phantom Popup ①</div><div class="result">Sign commitment (Ed25519 signature)</div></div></div>
+        <div class="flow-card"><div class="flow-n">5</div><div class="flow-body"><div class="action">Phantom Popup ②</div><div class="result">Approve transaction — sent to Solana</div></div></div>
+        <div class="flow-card"><div class="flow-n">6</div><div class="flow-body"><div class="action">Success Screen</div><div class="result">Real on-chain signature displayed</div></div></div>
+        <div class="flow-card"><div class="flow-n">7</div><div class="flow-body"><div class="action">Solana Explorer</div><div class="result">View real devnet transaction</div></div></div>
+        <div class="flow-card"><div class="flow-n">8</div><div class="flow-body"><div class="action">Audit View</div><div class="result">Transaction shows [Hidden] fields</div></div></div>
+        <div class="flow-card"><div class="flow-n">9</div><div class="flow-body"><div class="action">Switch to Auditor</div><div class="result">10-second countdown begins</div></div></div>
+        <div class="flow-card"><div class="flow-n">10</div><div class="flow-body"><div class="action">Reveal</div><div class="result">Real amount, sender, receiver displayed</div></div></div>
+      </div>
+      <div class="callout">
+        <strong>Two Phantom popups:</strong>
+        &nbsp;① Sign Message — Ed25519 signature on commitment hash &nbsp;·&nbsp;
+        ② Approve Transaction — atomic tx with Ed25519 verify + Memo write<br>
+        Solana network validates the signature. <strong>Invalid sig = tx rejected by the network.</strong>
+      </div>
+    </div>
+    <div class="slide-footer"><span class="footer-brand">VeilPay · Programmable Privacy for On-Chain Payments</span><span class="footer-num">5 / 8</span></div>
+  </div>
+
+  <!-- ═══ SLIDE 6 — Architecture ═══ -->
+  <div class="slide" id="s6">
+    <div class="glow"></div>
+    <div class="slide-inner">
+      <div class="slide-title"><span>06</span>Architecture</div>
+      <div class="arch-layer" style="border-color:#1f2d45;">
+        <div class="layer-title" style="color:#9CA3AF;">UI Layer</div>
+        <div class="layer-sub">Send Page &nbsp;·&nbsp; Rules Builder &nbsp;·&nbsp; Audit View &nbsp;·&nbsp; Role Switcher &nbsp;·&nbsp; Next.js + Tailwind + Zustand</div>
+      </div>
+      <div class="arch-layer card-green">
+        <div class="layer-title" style="color:#22C55E;">● Rule Engine &nbsp;<span style="font-size:10px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:2px 8px;color:#22C55E;">REAL · IMPLEMENTED</span></div>
+        <div class="layer-sub">applyRules(fields, mode, rules) → PublicView &nbsp;·&nbsp; Modes: public | private | rule-based &nbsp;·&nbsp; Fields: amount · sender · receiver</div>
+      </div>
+      <div class="split">
+        <div class="arch-layer card-amber" style="margin-bottom:0;">
+          <div class="layer-title" style="color:#F59E0B;">⚠ ZK Provider Interface &nbsp;<span style="font-size:10px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);border-radius:4px;padding:2px 8px;color:#F59E0B;">PLUGGABLE · MOCKED</span></div>
+          <div class="layer-sub">generateProof(tx, rules) → ZKProof<br>Current: MockProvider (hash simulation)<br>Production: <strong style="color:#F9FAFB;">Light Protocol</strong> ZK Compressed Accounts</div>
+        </div>
+        <div class="arch-layer card-green" style="margin-bottom:0;">
+          <div class="layer-title" style="color:#22C55E;">● On-Chain Commitment &nbsp;<span style="font-size:10px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:2px 8px;color:#22C55E;">REAL · LIVE</span></div>
+          <div class="layer-sub">1. wallet.signMessage(commitment) ← Ed25519 sig<br>2. Ed25519Program.verify(sig) ← Solana precompile<br>3. MemoProgram.write(commitment) ← permanent record</div>
+        </div>
+      </div>
+      <div class="arch-layer card-green" style="margin-top:10px;">
+        <div class="layer-title" style="color:#22C55E;">● Privacy Policy Engine &nbsp;<span style="font-size:10px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:2px 8px;color:#22C55E;">REAL · IMPLEMENTED</span></div>
+        <div class="layer-sub">canReveal(tx, role) &nbsp;·&nbsp; getSecondsUntilReveal(tx) &nbsp;·&nbsp; Roles: public · user · auditor · companyAdmin · daoGovernance</div>
+      </div>
+      <div class="note">The ZK provider is a pluggable interface. Replacing mock → Light Protocol = zero changes to Rule Engine, Policy Engine, or UI.</div>
+    </div>
+    <div class="slide-footer"><span class="footer-brand">VeilPay · Programmable Privacy for On-Chain Payments</span><span class="footer-num">6 / 8</span></div>
+  </div>
+
+  <!-- ═══ SLIDE 7 — Impact ═══ -->
+  <div class="slide" id="s7">
+    <div class="glow"></div>
+    <div class="slide-inner" style="padding-bottom:100px;">
+      <div class="slide-title"><span>07</span>Who Needs This</div>
+      <div class="cols cols-2">
+        <div>
+          <table class="tbl">
+            <thead><tr><th>User</th><th>Pain Today</th><th>VeilPay Enables</th></tr></thead>
+            <tbody>
+              <tr><td><strong style="color:#F9FAFB;">DAOs</strong></td><td>Contributor salaries public</td><td style="color:#22C55E;">Private pay, auditable by token holders</td></tr>
+              <tr><td><strong style="color:#F9FAFB;">Enterprises</strong></td><td>Invoice amounts exposed</td><td style="color:#22C55E;">B2B payments with selective disclosure</td></tr>
+              <tr><td><strong style="color:#F9FAFB;">Individuals</strong></td><td>Large payments = visible target</td><td style="color:#22C55E;">Receive payroll privately</td></tr>
+              <tr><td><strong style="color:#F9FAFB;">DeFi Protocols</strong></td><td>MEV from visible order flow</td><td style="color:#22C55E;">Protected pre-execution data</td></tr>
+              <tr><td><strong style="color:#F9FAFB;">Compliance Teams</strong></td><td>Can't use chain without full exposure</td><td style="color:#22C55E;">Regulatory-grade audit access</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex;flex-direction:column;justify-content:center;">
+          <div class="impact-stmt grad">Privacy is a prerequisite for real-world on-chain finance adoption.</div>
+          <div class="impact-body">Every serious enterprise evaluating Solana for payments hits the same wall: <em style="color:#F9FAFB;font-style:normal;">"We can't put our financial data on a public ledger."</em><br><br>VeilPay removes that wall — without making the ledger less trustworthy.</div>
+        </div>
+      </div>
+    </div>
+    <div class="banner">Transparency makes blockchains trustworthy. Programmable privacy makes them usable.</div>
+    <div class="slide-footer" style="bottom:60px;"><span class="footer-brand">VeilPay · Programmable Privacy for On-Chain Payments</span><span class="footer-num">7 / 8</span></div>
+  </div>
+
+  <!-- ═══ SLIDE 8 — Roadmap ═══ -->
+  <div class="slide" id="s8">
+    <div class="glow"></div>
+    <div class="slide-inner">
+      <div class="slide-title"><span>08</span>Roadmap</div>
+      <div class="cols cols-3" style="flex:1;">
+        <div class="card card-green phase-card">
+          <div class="phase-label dot-green">● Phase 1 — Now</div>
+          <div class="phase-title">Hackathon <span class="pill pill-green" style="font-size:10px;vertical-align:middle;">COMPLETE</span></div>
+          <div class="phase-item"><span class="done">✅</span>Rule Engine — fully implemented</div>
+          <div class="phase-item"><span class="done">✅</span>Role-based access control (5 roles)</div>
+          <div class="phase-item"><span class="done">✅</span>Ed25519 on-chain commitment</div>
+          <div class="phase-item"><span class="done">✅</span>Time-delayed reveal</div>
+          <div class="phase-item"><span class="done">✅</span>Full EN/ZH i18n</div>
+          <div class="phase-item"><span class="done">✅</span>Phantom wallet integration</div>
+          <div class="phase-item"><span class="mock">⚠️</span>ZK proof layer — mocked, pluggable</div>
+        </div>
+        <div class="card card-blue phase-card">
+          <div class="phase-label" style="color:#60A5FA;">◎ Phase 2 — 3 Months</div>
+          <div class="phase-title">Next <span class="pill pill-blue" style="font-size:10px;vertical-align:middle;">NEXT</span></div>
+          <div class="phase-item"><span class="todo">🔲</span>Light Protocol ZK Compressed Accounts</div>
+          <div class="phase-item"><span class="todo">🔲</span>True zero-knowledge amount range proofs</div>
+          <div class="phase-item"><span class="todo">🔲</span>Custom Solana program for commitment storage</div>
+          <div class="phase-item"><span class="todo">🔲</span>Real SPL token transfers</div>
+          <div class="phase-item"><span class="todo">🔲</span>Mainnet deployment</div>
+        </div>
+        <div class="card card-purple phase-card">
+          <div class="phase-label" style="color:#A78BFA;">◈ Phase 3 — 6–12 Months</div>
+          <div class="phase-title">Future <span class="pill pill-purple" style="font-size:10px;vertical-align:middle;">FUTURE</span></div>
+          <div class="phase-item"><span class="todo">🔲</span>Custom Circom circuits for policy proofs</div>
+          <div class="phase-item"><span class="todo">🔲</span>SDK for other dApps to plug in VeilPay rules</div>
+          <div class="phase-item"><span class="todo">🔲</span>Compliance module: auto-export to auditors</div>
+          <div class="phase-item"><span class="todo">🔲</span>DAO governance over disclosure policies</div>
+        </div>
+      </div>
+      <div class="closing">
+        <p>The <strong style="color:#F9FAFB;">Rule Engine</strong> and <strong style="color:#F9FAFB;">Policy Engine</strong> are the core IP.<br>
+        <span class="grad" style="font-weight:700;">ZK is a pluggable upgrade. The architecture is designed to grow.</span></p>
+        <div style="margin-top:12px;color:#4B5563;font-size:12px;">VeilPay · Built on Solana · 2026</div>
+      </div>
+    </div>
+    <div class="slide-footer"><span class="footer-brand">VeilPay · Programmable Privacy for On-Chain Payments</span><span class="footer-num">8 / 8</span></div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button id="prev" onclick="go(-1)" disabled>◀</button>
+  <span class="nav-counter" id="counter">1 / 8</span>
+  <button id="next" onclick="go(1)">▶</button>
+</div>
+
+<script>
+  let cur = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function go(dir) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(total - 1, cur + dir));
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = (cur + 1) + ' / ' + total;
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === total - 1;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+  });
+</script>
+
+</body>
+</html>
